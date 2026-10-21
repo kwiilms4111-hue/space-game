@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>우주 천문대 복원 프로젝트 | 중3 과학</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4B5563;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+  <!-- 헤더 영역 -->
+  <header class="bg-slate-900/95 backdrop-blur border-b border-indigo-900/50 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+        <!-- SVG 안테나 아이콘 -->
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          우주 천문대 복원 프로젝트
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">중3 과학</span>
+        </h1>
+        <p class="text-[11px] text-slate-400">데이터를 복원하여 메인 컴퓨터를 활성화하세요!</p>
+      </div>
+    </div>
+
+    <!-- 점수 및 초기화 버튼 -->
+    <div class="flex items-center space-x-2 md:space-x-3">
+      <div class="bg-slate-800/90 px-3.5 py-1.5 rounded-full border border-slate-700 flex items-center gap-1.5 shadow-inner">
+        <span class="text-amber-400 text-sm">★</span>
+        <span class="text-xs text-slate-300 font-medium">탐사 점수:</span>
+        <span id="scoreBadge" class="text-sm font-extrabold text-amber-400">0</span>
+      </div>
+      <button onclick="resetAllProgress()" class="p-2 text-slate-400 hover:text-rose-400 rounded-lg transition" title="진행상황 초기화">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 인터랙션 컨테이너 -->
+  <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+    
+    <!-- 미션 가이드 배너 -->
+    <div id="missionBanner" class="mb-4 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 flex items-start gap-3 shadow-inner">
+      <div class="text-indigo-400 mt-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 id="stageTitle" class="font-bold text-indigo-200 text-sm md:text-base">스테이지 1: 연주 시차와 별까지의 거리</h2>
+        <p id="stageDesc" class="text-xs md:text-sm text-slate-300 mt-0.5 leading-relaxed">지구의 6개월 공전 궤도에서 관측한 연주 시차를 바탕으로 별까지의 거리를 계산하세요.</p>
+      </div>
+    </div>
+
+    <!-- 인터랙티브 스테이지 영역 (동적 렌더링) -->
+    <div id="gamePlayArea" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-2xl relative min-h-[360px] flex flex-col justify-center">
+      <!-- JS 주입 -->
+    </div>
+
+    <!-- 피드백 메시지 박스 -->
+    <div id="feedbackBox" class="mt-4 hidden p-4 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span id="feedbackIcon" class="text-lg"></span>
+        <span id="feedbackText" class="leading-snug"></span>
+      </div>
+      <button id="feedbackActionBtn" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition flex-shrink-0 ml-2"></button>
+    </div>
+  </main>
+
+  <!-- 하단 태블릿 터치 친화형 큼직한 탭 네비게이터 -->
+  <footer class="bg-slate-900/95 border-t border-slate-800 p-3 md:p-4 sticky bottom-0 z-50">
+    <div class="max-w-3xl mx-auto flex items-center justify-between gap-2 overflow-x-auto custom-scrollbar pb-1">
+      
+      <button onclick="switchStage(1)" id="tab-1" class="stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30">
+        <span class="text-base md:text-lg">🔭</span>
+        <span class="text-[11px] md:text-xs">1. 연주 시차</span>
+      </button>
+
+      <button onclick="switchStage(2)" id="tab-2" class="stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all bg-slate-800 text-slate-300 hover:bg-slate-700/60 font-medium">
+        <span class="text-base md:text-lg">✨</span>
+        <span class="text-[11px] md:text-xs">2. 등급과 거리</span>
+      </button>
+
+      <button onclick="switchStage(3)" id="tab-3" class="stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all bg-slate-800 text-slate-300 hover:bg-slate-700/60 font-medium">
+        <span class="text-base md:text-lg">🌡️</span>
+        <span class="text-[11px] md:text-xs">3. 색과 온도</span>
+      </button>
+
+      <button onclick="switchStage(4)" id="tab-4" class="stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all bg-slate-800 text-slate-300 hover:bg-slate-700/60 font-medium">
+        <span class="text-base md:text-lg">🌌</span>
+        <span class="text-[11px] md:text-xs">4. 우리은하</span>
+      </button>
+
+      <button onclick="switchStage(5)" id="tab-5" class="stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all bg-slate-800 text-slate-300 hover:bg-slate-700/60 font-medium">
+        <span class="text-base md:text-lg">🎈</span>
+        <span class="text-[11px] md:text-xs">5. 우주 팽창</span>
+      </button>
+
+    </div>
+  </footer>
+
+  <!-- 안전한 Vanilla JS 로직 -->
+  <script>
+    // 브라우저 AudioContext 자동재생 보안 완화형 효과음 엔진
+    const Sound = {
+      ctx: null,
+      get() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        return this.ctx;
+      },
+      play(freqArr, durationArr, type = 'sine') {
+        const c = this.get();
+        if (!c) return;
+        let t = c.currentTime;
+        freqArr.forEach((freq, idx) => {
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.15, t);
+          const dur = durationArr[idx];
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(t);
+          osc.stop(t + dur);
+          t += dur;
+        });
+      },
+      success() { this.play([523.25, 659.25, 783.99], [0.08, 0.08, 0.25], 'sine'); },
+      mistake() { this.play([220, 196], [0.12, 0.2], 'triangle'); },
+      click() { this.play([650], [0.04], 'sine'); }
+    };
+
+    let currentStage = 1;
+    let score = 0;
+    const clearedStages = new Set();
+
+    function addScore(points) {
+      if (!clearedStages.has(currentStage)) {
+        clearedStages.add(currentStage);
+        score += points;
+        document.getElementById('scoreBadge').innerText = score;
+      }
+    }
+
+    function showFeedback(type, text, hint = null) {
+      const box = document.getElementById('feedbackBox');
+      const icon = document.getElementById('feedbackIcon');
+      const textElem = document.getElementById('feedbackText');
+      const actionBtn = document.getElementById('feedbackActionBtn');
+      
+      box.classList.remove('hidden', 'bg-emerald-950/90', 'border-emerald-500/50', 'text-emerald-200', 'bg-rose-950/90', 'border-rose-500/50', 'text-rose-200');
+
+      if (type === 'success') {
+        Sound.success();
+        box.classList.add('bg-emerald-950/90', 'border-emerald-500/50', 'text-emerald-200');
+        icon.innerText = '✅';
+        actionBtn.innerText = currentStage < 5 ? '다음 미션 ➔' : '완료';
+        actionBtn.onclick = () => {
+          box.classList.add('hidden');
+          if (currentStage < 5) switchStage(currentStage + 1);
+        };
+        actionBtn.classList.remove('hidden');
+      } else {
+        Sound.mistake();
+        box.classList.add('bg-rose-950/90', 'border-rose-500/50', 'text-rose-200');
+        icon.innerText = '💡';
+        actionBtn.innerText = '닫기';
+        actionBtn.onclick = () => box.classList.add('hidden');
+        actionBtn.classList.remove('hidden');
+      }
+      textElem.innerHTML = `<div>${text}</div>` + (hint ? `<div class="text-xs mt-1 text-amber-200 opacity-90">${hint}</div>` : '');
+    }
+
+    function switchStage(stageNum) {
+      Sound.click();
+      currentStage = stageNum;
+      document.getElementById('feedbackBox').classList.add('hidden');
+
+      document.querySelectorAll('.stage-tab').forEach((tab, idx) => {
+        const isCurrent = idx + 1 === stageNum;
+        tab.className = `stage-tab flex-1 min-w-[70px] md:min-w-[110px] py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all ${
+          isCurrent 
+            ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30' 
+            : 'bg-slate-800 text-slate-300 hover:bg-slate-700/60 font-medium'
+        }`;
+      });
+
+      renderCurrentStage();
+    }
+
+    function renderCurrentStage() {
+      const playArea = document.getElementById('gamePlayArea');
+      const title = document.getElementById('stageTitle');
+      const desc = document.getElementById('stageDesc');
+
+      if (currentStage === 1) {
+        title.innerText = '스테이지 1: 연주 시차와 거리 계산';
+        desc.innerText = '연주 시차(p)와 별까지의 거리(d)는 반비례 관계(d = 1/p)입니다. 주어진 연주 시차에 맞는 별의 거리를 구하세요.';
+        renderStage1(playArea);
+      } else if (currentStage === 2) {
+        title.innerText = '스테이지 2: 별의 밝기와 10 pc 궤도 분류';
+        desc.innerText = '별의 겉보기 등급(m)과 절대 등급(M)을 비교하여, 이 별이 10 pc보다 가까운지/먼지 판정하세요.';
+        renderStage2(playArea);
+      } else if (currentStage === 3) {
+        title.innerText = '스테이지 3: 색으로 비교하는 별의 표면 온도';
+        desc.innerText = '온도가 높을수록 파란색, 낮을수록 붉은색을 띱니다. 고온에서 저온 순서로 올바른 나열을 고르세요.';
+        renderStage3(playArea);
+      } else if (currentStage === 4) {
+        title.innerText = '스테이지 4: 우리은하의 성단과 성운 분류소';
+        desc.innerText = '천체의 사진 및 관측 특징 설명을 확인하고 알맞은 천체 유형을 터치하세요.';
+        renderStage4(playArea);
+      } else if (currentStage === 5) {
+        title.innerText = '스테이지 5: 풍선 모형으로 확인하는 우주 팽창';
+        desc.innerText = '풍선을 부풀리면 중심 없이 모든 은하가 서로 멀어집니다. 시뮬레이터를 조작하고 관측 퀴즈를 해결하세요.';
+        renderStage5(playArea);
+      }
+    }
+
+    // --- 스테이지 1: 연주 시차 ---
+    function renderStage1(container) {
+      const list = [
+        { name: '별 프록시마', p: 0.1, ansD: 10 },
+        { name: '별 베가', p: 0.25, ansD: 4 },
+        { name: '별 카펠라', p: 0.5, ansD: 2 }
+      ];
+      const cur = list[Math.floor(Math.random() * list.length)];
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center max-w-md mx-auto w-full">
+          <div class="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs mb-3 font-mono">
+            지구 공전 궤도 관측소 수신 데이터
+          </div>
+          <h3 class="text-xl font-bold text-white mb-1">${cur.name}의 연주 시차: <span class="text-amber-400 font-extrabold text-2xl">${cur.p}"</span></h3>
+          <p class="text-xs text-slate-400 mb-5">공식: 거리(pc) = 1 ÷ 연주 시차(")</p>
+
+          <div class="w-full bg-slate-950/70 p-4 rounded-xl border border-slate-800 mb-5 flex flex-col items-center">
+            <label class="text-xs md:text-sm font-semibold text-slate-300 mb-2">지구에서 이 별까지의 거리는 몇 pc 일까요?</label>
+            <div class="flex items-center gap-2 justify-center">
+              <input type="number" id="parallaxInput" step="any" placeholder="숫자 입력" class="w-32 bg-slate-800 border-2 border-indigo-500/50 rounded-xl py-2.5 text-center text-xl font-bold text-white focus:outline-none focus:border-indigo-400">
+              <span class="text-base font-bold text-slate-300">pc</span>
+            </div>
+          </div>
+
+          <button onclick="checkStage1(${cur.ansD})" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition">
+            거리 좌표 검증하기
+          </button>
+        </div>
+      `;
+    }
+
+    function checkStage1(ans) {
+      const val = parseFloat(document.getElementById('parallaxInput').value);
+      if (val === ans) {
+        addScore(20);
+        showFeedback('success', `정답입니다! 거리는 ${ans} pc 입니다. 연주 시차가 작을수록 별까지의 거리는 더 멀어집니다.`);
+      } else {
+        showFeedback('mistake', '계산 결과를 다시 확인해 보세요.', `1 ÷ 연주 시차를 계산해 보세요! (예: 1 ÷ 0.1 = 10)`);
+      }
+    }
+
+    // --- 스테이지 2: 별의 등급과 거리 ---
+    function renderStage2(container) {
+      const problems = [
+        { name: '시리우스', app: -1.5, abs: 1.4, ans: 'near' },
+        { name: '베텔게우스', app: 0.4, abs: -5.6, ans: 'far' },
+        { name: '북극성(가상)', app: 2.0, abs: 2.0, ans: 'exact' }
+      ];
+      const cur = problems[Math.floor(Math.random() * problems.length)];
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center max-w-md mx-auto w-full">
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800 w-full mb-5">
+            <span class="text-[11px] font-semibold text-indigo-400">천체 광도 분석</span>
+            <h3 class="text-xl font-extrabold text-white mt-1 mb-3">${cur.name}</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs md:text-sm">
+              <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
+                <div class="text-slate-400 text-[11px]">겉보기 등급(m)</div>
+                <div class="text-base font-bold text-amber-300">${cur.app} 등급</div>
+              </div>
+              <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
+                <div class="text-slate-400 text-[11px]">절대 등급(M)</div>
+                <div class="text-base font-bold text-purple-300">${cur.abs} 등급</div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs md:text-sm text-slate-300 mb-3 font-medium">이 별은 지구로부터 <strong class="text-indigo-300">10 pc</strong> 기준 어디에 있을까요?</p>
+
+          <div class="grid grid-cols-3 gap-2 w-full">
+            <button onclick="checkStage2('${cur.ans}', 'near')" class="py-3.5 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-400 flex flex-col items-center gap-1 transition text-white">
+              <span class="text-xs font-bold">10 pc 안쪽</span>
+              <span class="text-[10px] text-slate-400">m &lt; M</span>
+            </button>
+            <button onclick="checkStage2('${cur.ans}', 'exact')" class="py-3.5 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-400 flex flex-col items-center gap-1 transition text-white">
+              <span class="text-xs font-bold">딱 10 pc</span>
+              <span class="text-[10px] text-slate-400">m = M</span>
+            </button>
+            <button onclick="checkStage2('${cur.ans}', 'far')" class="py-3.5 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-400 flex flex-col items-center gap-1 transition text-white">
+              <span class="text-xs font-bold">10 pc 바깥쪽</span>
+              <span class="text-[10px] text-slate-400">m &gt; M</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkStage2(ans, selected) {
+      if (ans === selected) {
+        addScore(20);
+        showFeedback('success', '완벽합니다! 겉보기 등급과 절대 등급의 차이를 통해 10 pc 기준 위치를 정확히 판별했습니다.');
+      } else {
+        showFeedback('mistake', '다시 생각해 보세요.', '겉보기 등급이 절대 등급보다 작으면(m < M), 10 pc에 있을 때보다 실제로 더 가깝다는 뜻입니다.');
+      }
+    }
+
+    // --- 스테이지 3: 색과 표면 온도 ---
+    function renderStage3(container) {
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center max-w-md mx-auto w-full">
+          <p class="text-xs md:text-sm text-slate-300 mb-4">표면 온도가 <strong class="text-blue-400">가장 높은 별</strong>에서 <strong class="text-rose-400">가장 낮은 별</strong> 순서로 올바르게 나열된 보기를 고르세요.</p>
+
+          <div class="w-full bg-slate-950/70 p-3 rounded-xl border border-slate-800 mb-4 flex items-center justify-between text-xs font-bold">
+            <span class="text-blue-400">고온 (청색)</span>
+            <div class="h-1 flex-1 mx-2.5 bg-gradient-to-r from-blue-500 via-amber-300 to-rose-500 rounded-full"></div>
+            <span class="text-rose-400">저온 (적색)</span>
+          </div>
+
+          <div class="flex flex-col gap-2 w-full">
+            <button onclick="checkStage3(false)" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-left text-xs transition">
+              ① 붉은색(베텔게우스) ➔ 노란색(태양) ➔ 청백색(리겔)
+            </button>
+            <button onclick="checkStage3(true)" class="p-3 rounded-xl bg-slate-800 hover:bg-indigo-600/80 border border-slate-700 hover:border-indigo-400 text-left text-xs font-semibold text-indigo-100 transition">
+              ② 청백색(리겔) ➔ 노란색(태양) ➔ 붉은색(베텔게우스)
+            </button>
+            <button onclick="checkStage3(false)" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-left text-xs transition">
+              ③ 노란색(태양) ➔ 청백색(리겔) ➔ 붉은색(베텔게우스)
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkStage3(isCorrect) {
+      if (isCorrect) {
+        addScore(20);
+        showFeedback('success', '정답입니다! 파란색 계열의 별일수록 온도가 높고, 붉은색 계열의 별일수록 표면 온도가 낮습니다.');
+      } else {
+        showFeedback('mistake', '순서가 올바르지 않습니다.', '가스레인지의 파란 불꽃(고온)과 양초의 붉은 불꽃(저온)을 기억하세요!');
+      }
+    }
+
+    // --- 스테이지 4: 성단과 성운 분류소 ---
+    function renderStage4(container) {
+      const cards = [
+        { name: '말머리성운', desc: '뒤쪽에서 오는 별빛을 가로막아 어둡게 보이는 천체', ans: '암흑 성운' },
+        { name: '플레이아데스(좀생이) 성단', desc: '수십~수만 개의 별들이 나선팔에 비교적 엉성하게 모여 있는 천체', ans: '산개 성단' },
+        { name: '오메가(M22) 성단', desc: '수만~수십만 개의 별들이 빽빽하게 공 모양으로 모인 천체', ans: '구상 성단' },
+        { name: '오리온 대성운', desc: '주변 별빛을 흡수하여 가열되면서 스스로 붉은빛을 방출하는 천체', ans: '방출 성운' }
+      ];
+      const cur = cards[Math.floor(Math.random() * cards.length)];
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center max-w-md mx-auto w-full">
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800 w-full mb-4">
+            <span class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[11px] font-semibold border border-purple-500/30">천체 도감 분석</span>
+            <h3 class="text-xl font-bold text-white mt-1.5 mb-2">${cur.name}</h3>
+            <p class="text-xs md:text-sm text-slate-300 font-medium bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+              "${cur.desc}"
+            </p>
+          </div>
+
+          <p class="text-xs text-slate-400 mb-2">이 천체의 올바른 분류를 터치하세요.</p>
+
+          <div class="grid grid-cols-2 gap-2 w-full">
+            <button onclick="checkStage4('${cur.ans}', '산개 성단')" class="py-3 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold transition">산개 성단</button>
+            <button onclick="checkStage4('${cur.ans}', '구상 성단')" class="py-3 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold transition">구상 성단</button>
+            <button onclick="checkStage4('${cur.ans}', '방출 성운')" class="py-3 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold transition">방출 성운</button>
+            <button onclick="checkStage4('${cur.ans}', '암흑 성운')" class="py-3 px-2 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 text-xs font-bold transition">암흑 성운</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkStage4(ans, selected) {
+      if (ans === selected) {
+        addScore(20);
+        showFeedback('success', `정확한 분류입니다! ${ans}의 특징을 올바르게 이해하고 있습니다.`);
+      } else {
+        showFeedback('mistake', '올바른 분류가 아닙니다.', '별들의 집단(성단)인지 구름 모양(성운)인지, 빛을 가로막는지 스스로 내는지 확인하세요.');
+      }
+    }
+
+    // --- 스테이지 5: 우주 팽창 풍선 시뮬레이터 ---
+    let balloonScale = 1.0;
+    function renderStage5(container) {
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center max-w-md mx-auto w-full">
+          <div class="w-full h-36 bg-slate-950 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center mb-3">
+            <canvas id="universeCanvas" width="380" height="144" class="w-full h-full"></canvas>
+            <div class="absolute bottom-1.5 right-2 text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-700">풍선 표면 모형</div>
+          </div>
+
+          <div class="flex items-center gap-2 w-full mb-4">
+            <button onclick="expandUniverse(-0.15)" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold border border-slate-700">우주 수축 ◀</button>
+            <button onclick="expandUniverse(0.2)" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-indigo-600/30">우주 팽창 ▶</button>
+          </div>
+
+          <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 w-full text-left mb-3">
+            <p class="text-xs text-slate-300 font-medium">풍선 모형처럼 우주가 팽창할 때 일어나는 관측 현상으로 옳은 것은?</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 w-full text-xs font-semibold">
+            <button onclick="checkStage5(true)" class="p-2.5 bg-slate-800 hover:bg-indigo-600 border border-slate-700 rounded-xl transition text-left">
+              멀리 있는 은하일수록 더 빨리 멀어지며 우주 중심은 없다.
+            </button>
+            <button onclick="checkStage5(false)" class="p-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition text-left text-slate-400">
+              우리은하가 우주의 중심이며 우리만 제자리에 정지해 있다.
+            </button>
+          </div>
+        </div>
+      `;
+      balloonScale = 1.0;
+      setTimeout(drawUniverse, 50);
+    }
+
+    function expandUniverse(delta) {
+      Sound.click();
+      balloonScale = Math.max(0.65, Math.min(2.0, balloonScale + delta));
+      drawUniverse();
+    }
+
+    function drawUniverse() {
+      const cvs = document.getElementById('universeCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const cx = cvs.width / 2;
+      const cy = cvs.height / 2;
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      const galaxies = [
+        { x: -80, y: -15, color: '#38BDF8', label: '은하 A' },
+        { x: -25, y: 15, color: '#F472B6', label: '우리은하' },
+        { x: 40, y: -20, color: '#FACC15', label: '은하 B' },
+        { x: 95, y: 20, color: '#4ADE80', label: '은하 C' }
+      ];
+
+      galaxies.forEach((g) => {
+        const curX = cx + g.x * balloonScale;
+        const curY = cy + g.y * balloonScale;
+
+        ctx.beginPath();
+        ctx.arc(curX, curY, 5 * Math.min(balloonScale, 1.3), 0, Math.PI * 2);
+        ctx.fillStyle = g.color;
+        ctx.fill();
+
+        ctx.fillStyle = '#CBD5E1';
+        ctx.font = '10px Pretendard, sans-serif';
+        ctx.fillText(g.label, curX - 14, curY - 10);
+      });
+    }
+
+    function checkStage5(isCorrect) {
+      if (isCorrect) {
+        addScore(20);
+        showFeedback('success', '대단합니다! 전 우주 관측 미션을 완수했습니다. 팽창하는 우주에는 특별한 중심이 없습니다.');
+      } else {
+        showFeedback('mistake', '오답입니다.', '어느 은하를 기준으로 보더라도 모든 은하가 멀어집니다. 따라서 우주 팽창의 중심은 없습니다.');
+      }
+    }
+
+    function resetAllProgress() {
+      if (confirm('탐사 점수와 진행도를 처음으로 되돌릴까요?')) {
+        score = 0;
+        clearedStages.clear();
+        document.getElementById('scoreBadge').innerText = '0';
+        switchStage(1);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCurrentStage();
+    });
+  </script>
+</body>
+</html>
